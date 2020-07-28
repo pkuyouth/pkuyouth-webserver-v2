@@ -29,3 +29,4 @@ def _load_config(filename):
 
 MYSQL_CONFIG = _load_config("mysql.json")
 REDIS_CONFIG = _load_config("redis.json")
+WXBOT_CONFIG = _load_config("wxbot.json")

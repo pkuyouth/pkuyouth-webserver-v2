@@ -8,10 +8,12 @@
 # ---------------------------------------
 # Copyright (c) 2020 PKUYouth
 
-from flask import Flask
+from flask import Flask, jsonify
 from .core.config import CONFIGS
 from .core.mysql import db
+from .core.exceptions import PKUYouthException
 from .blueprints.root import bpRoot
+from .blueprints.wxbot import bpWxbot
 
 def create_app(config):
 
@@ -24,5 +26,12 @@ def create_app(config):
     db.init_app(app)
 
     app.register_blueprint(bpRoot)
+    app.register_blueprint(bpWxbot, url_prefix="/wxbot")
+
+    @app.errorhandler(PKUYouthException)
+    def handle_pkuyouth_exception(e):
+        r = jsonify(e.to_dict())
+        r.status_code = e.status_code
+        return r
 
     return app

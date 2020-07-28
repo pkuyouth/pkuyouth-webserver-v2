@@ -9,8 +9,8 @@
 # Copyright (c) 2020 PKUYouth
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects.mysql.types import CHAR, VARCHAR, TEXT,\
-    INTEGER, TINYINT, BIGINT, TIMESTAMP
+from sqlalchemy.dialects.mysql.types import CHAR, VARCHAR, TEXT, INTEGER,\
+    TINYINT, BIGINT, DATETIME
 from .model import Model
 from .expression import FulltextMatch
 
@@ -22,6 +22,6 @@ db.MYSQL_TEXT = TEXT
 db.MYSQL_INTEGER = INTEGER
 db.MYSQL_TINYINT = TINYINT
 db.MYSQL_BIGINT = BIGINT
-db.MYSQL_TIMESTAMP = TIMESTAMP
+db.MYSQL_DATETIME = DATETIME
 
 db.FulltextMatch = FulltextMatch

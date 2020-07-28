@@ -9,10 +9,10 @@
 # Copyright (c) 2020 PKUYouth
 
 from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.sql.expression import ClauseElement
+from sqlalchemy.sql.expression import ColumnElement
 from sqlalchemy import literal
 
-class FulltextMatch(ClauseElement):
+class FulltextMatch(ColumnElement):
 
     DEFAULT = ''
     BOOLEAN = 'IN BOOLEAN MODE'

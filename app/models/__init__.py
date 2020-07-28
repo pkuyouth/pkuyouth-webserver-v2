@@ -9,3 +9,8 @@
 # Copyright (c) 2020 PKUYouth
 
 from ..core.mysql import db
+from .article import Article
+from .reporter import Reporter
+from .article_reporter import ArticleReporter
+from .wxuser import WxUser
+from .wxuser_article import WxUserArticle

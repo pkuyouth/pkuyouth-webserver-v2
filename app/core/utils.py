@@ -8,6 +8,7 @@
 # ---------------------------------------
 # Copyright (c) 2020 PKUYouth
 
+from ._internal import _bool as bool_
 
 def b(s, encoding="utf-8"):
     """ str/int/float to bytes """
@@ -15,7 +16,7 @@ def b(s, encoding="utf-8"):
         return s
     if isinstance(s, (str, int ,float)):
         return str(s).encode(encoding)
-    raise TypeError("unsupported type %s of %r" % (type(s), s))
+    raise TypeError("unsupported type %s of %r" % (s.__class__.__name__, s))
 
 def u(s, encoding="utf-8"):
     """ bytes/int/float to str """
@@ -23,4 +24,4 @@ def u(s, encoding="utf-8"):
         return str(s)
     if isinstance(s, bytes):
         return s.decode(encoding)
-    raise TypeError("unsupported type %s of %r" % (type(s), s))
+    raise TypeError("unsupported type %s of %r" % (s.__class__.__name__, s))
