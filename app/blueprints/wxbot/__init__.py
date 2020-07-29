@@ -159,23 +159,37 @@ def root():
 
                 if mat is None:
 
-                    stmt = db.select([
-                            Article.title,
-                            Article.digest,
-                            Article.cover_url,
-                            Article.content_url,
+                    sbq = db.session.\
+                        query(
+                            Article.aid,
                             db.FulltextMatch(
                                 Article.ix_text,
                                 keyword,
                                 db.FulltextMatch.BOOLEAN
                             ).label('score')
-                        ]).order_by(
+                        ).\
+                        order_by(
                             db.desc('score'),
                             Article.masssend_time.desc(),
                             Article.idx.asc()
-                        ).limit(SEARCH_RESULT_COUNT)
+                        ).\
+                        limit(SEARCH_RESULT_COUNT).\
+                        subquery()
 
-                    articles = db.session.execute(stmt).fetchall()
+                    articles = db.session.\
+                        query(
+                            Article.title,
+                            Article.digest,
+                            Article.cover_url,
+                            Article.content_url,
+                        ).\
+                        join(sbq, sbq.c.aid == Article.aid).\
+                        order_by(
+                            sbq.c.score.desc(),
+                            Article.masssend_time.desc(),
+                            Article.idx.asc()
+                        ).\
+                        all()
 
                     if len(articles) == 0:
                         return reply.TextMessage(to_user, from_user,
@@ -190,7 +204,7 @@ def root():
                     content = '\n'.join("(%d) %s" % (ix + 1, a.title)
                                         for (ix, a) in enumerate(articles))
 
-                    articles = [ json.dumps(dict(a)) for a in articles ]
+                    articles = [ json.dumps(a._asdict()) for a in articles ]
                     alist.append(*articles)
                     alist.expires(ALIST_EXPIRES)
 
@@ -215,19 +229,28 @@ def root():
 
                 if mat.group(1) is not None:
 
-                    articles = db.session.query(
+                    sbq = db.session.\
+                        query(Article.aid).\
+                        filter(Article.masssend_time.between(st, ed)).\
+                        order_by(
+                            Article.masssend_time.desc(),
+                            Article.idx.asc()
+                        ).\
+                        subquery()
+
+                    articles = db.session.\
+                        query(
                             Article.title,
                             Article.digest,
                             Article.cover_url,
                             Article.content_url
-                        ).filter(
-                            Article.masssend_time.between(st, ed)
-                        ).order_by(
+                        ).\
+                        join(sbq, sbq.c.aid == Article.aid).\
+                        order_by(
                             Article.masssend_time.desc(),
                             Article.idx.asc()
-                        )
-
-                    articles = list(articles)
+                        ).\
+                        all()
 
                     if len(articles) == 0:
                         return reply.TextMessage(to_user, from_user,
@@ -252,17 +275,19 @@ def root():
 
                 else:
 
-                    articles = db.session.query(
+                    articles = db.session.\
+                        query(
                             Article.title,
                             Article.masssend_time
-                        ).filter(
-                            Article.masssend_time.between(st, ed)
-                        ).order_by(
+                        ).\
+                        filter(Article.masssend_time.between(st, ed)).\
+                        order_by(
                             Article.masssend_time.desc(),
                             Article.idx.asc()
-                        )
+                        ).\
+                        all()
 
-                    if articles.count() == 0:
+                    if len(articles) == 0:
                         return reply.TextMessage(to_user, from_user,
                                                  text.NO_ARTICLE_IN_THIS_MONTH)
 

@@ -20,7 +20,7 @@ class PKUYouthException(Exception):
         self.payload = payload
 
     def to_dict(self):
-        rv = dict(self._payload or ())
+        rv = dict(self.payload or ())
         rv['errmsg'] = self.message
         return rv
 
@@ -29,3 +29,14 @@ class RequestArgumentError(PKUYouthException):
 
 class WxbotAuthFailed(PKUYouthException):
     """ 微信服务器接入认证失败 """
+
+class MiniappGetAccessTokenFailed(PKUYouthException):
+    """ 获取微信 API 访问凭证失败 """
+
+class MiniappJscode2sessionFailed(PKUYouthException):
+    """ 未能成功通过微信服务器与小程序用户建立会话 """
+
+class MiniappUnauthorized(PKUYouthException):
+    """ 小程序用户认证失败 """
+    status_code = 401
+

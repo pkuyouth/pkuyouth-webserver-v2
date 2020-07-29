@@ -26,7 +26,7 @@ class Article(db.Model):
     title         = db.Column(db.MYSQL_TEXT(charset='utf8mb4'), nullable=False)
     digest        = db.Column(db.MYSQL_TEXT(charset='utf8mb4'), nullable=True)
     content       = db.Column(db.MYSQL_TEXT(charset='utf8mb4'), nullable=True)
-    column        = db.Column(db.MYSQL_TEXT, nullable=True)
+    column        = db.Column(db.MYSQL_VARCHAR(128), nullable=True, server_default='')
     cover_url     = db.Column(db.MYSQL_TEXT, nullable=False)
     content_url   = db.Column(db.MYSQL_TEXT, nullable=False)
     like_num      = db.Column(db.MYSQL_INTEGER, nullable=False)
@@ -35,7 +35,10 @@ class Article(db.Model):
     hidden        = db.Column(db.MYSQL_TINYINT(1), nullable=False, server_default='0')
 
     ix_msgid      = db.Index('ix_msgid', appmsgid, idx, unique=True)
+    ix_column     = db.Index('ix_column', column)
     ix_time       = db.Index('ix_time', masssend_time)
+    ix_hidden     = db.Index('ix_hidden', hidden)
+    ix_read_num   = db.Index('ix_read_num', read_num)
     ix_text       = db.Index('ix_text', title, digest, content,
                              mysql_prefix='FULLTEXT', mysql_with_parser='ngram')
 

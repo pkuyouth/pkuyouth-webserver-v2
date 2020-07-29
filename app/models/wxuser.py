@@ -22,3 +22,6 @@ class WxUser(db.Model):
     openid           = db.Column(db.MYSQL_CHAR(28), primary_key=True)
     auto_change_card = db.Column(db.MYSQL_TINYINT(1), nullable=False, server_default='0')
     use_small_card   = db.Column(db.MYSQL_TINYINT(1), nullable=False, server_default='1')
+
+    def __init__(self, openid):
+        self.openid = openid

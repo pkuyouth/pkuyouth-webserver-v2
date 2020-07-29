@@ -14,6 +14,7 @@ from .core.mysql import db
 from .core.exceptions import PKUYouthException
 from .blueprints.root import bpRoot
 from .blueprints.wxbot import bpWxbot
+from .blueprints.miniapp import bpMiniapp
 
 def create_app(config):
 
@@ -27,6 +28,7 @@ def create_app(config):
 
     app.register_blueprint(bpRoot)
     app.register_blueprint(bpWxbot, url_prefix="/wxbot")
+    app.register_blueprint(bpMiniapp, url_prefix="/miniapp")
 
     @app.errorhandler(PKUYouthException)
     def handle_pkuyouth_exception(e):

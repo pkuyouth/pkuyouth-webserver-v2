@@ -22,3 +22,8 @@ class WxUserArticle(db.Model):
     openid = db.Column(db.MYSQL_CHAR(28), db.ForeignKey('wxuser.openid'), primary_key=True)
     aid    = db.Column(db.MYSQL_INTEGER, db.ForeignKey('article.aid'), primary_key=True)
     ctime  = db.Column(db.BIGINT, nullable=False)
+
+    def __init__(self, openid, aid):
+        self.openid = openid
+        self.aid = aid
+        self.ctime = self.now()

@@ -31,11 +31,17 @@ manager.add_command('urls', ShowUrls())
 def shell():
     """ run IPython shell """
 
+    from app.blueprints.miniapp import init_utoken_map
+    init_utoken_map()
+
+    from app.blueprints.miniapp import utoken_map
+
     ctx = {
         "app": app,
         "request": request,
         "g": g,
-        "db": db
+        "db": db,
+        "utoken_map": utoken_map,
     }
 
     ctx.update({

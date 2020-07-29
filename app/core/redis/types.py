@@ -12,6 +12,66 @@ import redis
 from .pool import REDIS_CONNECTION_POOL
 
 
+class RedisAutoExpiredMap(object):
+
+    def __init__(self, namespace, expires, connection_pool=REDIS_CONNECTION_POOL):
+        self._expires = expires
+        self._namespace = namespace
+        self._conn = redis.Redis(connection_pool=connection_pool)
+
+    def __repr__(self):
+        return "%s(namespace=%r, expires=%s)" % (
+            self.__class__.__name__,
+            self._namespace,
+            self._expires,
+        )
+
+    @property
+    def namespace(self):
+        return self._namespace
+
+    @property
+    def expires(self):
+        return self._expires
+
+    def _get_key(self, key):
+        return "%s_%s" % (self._namespace, key)
+
+    def _strip_namespace(self, key):
+        return key[ len(self._namespace) + 1 : ]
+
+    def __iter__(self):
+        return iter(self.keys())
+
+    def __contains__(self, key):
+        return self._conn.exists(self._get_key(key))
+
+    def __getitem__(self, key):
+        return self._conn.get(self._get_key(key))
+
+    def __setitem__(self, key, value):
+        return self._conn.setex(self._get_key(key), self._expires, value)
+
+    def __delitem__(self, key):
+        return self._conn.delete(self._get_key(key))
+
+    def resetex(self, key):
+        return self._conn.expire(self._get_key(key), self._expires)
+
+    def ttl(self, key):
+        return self._conn.ttl(self._get_key(key))
+
+    def keys(self, withns=False):
+        keys = self._conn.scan_iter("%s_*" % self._namespace)
+        yield from keys if withns else map(self._strip_namespace, keys)
+
+    def clear(self):
+        cnt = 0
+        for key in self.keys(withns=True):
+            cnt += self._conn.delete(key)
+        return cnt
+
+
 class RedisContainer(object):
 
     def __init__(self, name, connection_pool=REDIS_CONNECTION_POOL):
@@ -24,9 +84,9 @@ class RedisContainer(object):
 
     def __repr__(self):
         return "%s(%r)" % (
-                    self.__class__.__name__,
-                    self._name,
-                )
+            self.__class__.__name__,
+            self._name,
+        )
 
     def __len__(self):
         raise NotImplementedError

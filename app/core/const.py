@@ -27,6 +27,7 @@ mkdir(CACHE_DIR)
 def _load_config(filename):
     return load_json_config(os.path.join(CONFIG_DIR, filename))
 
-MYSQL_CONFIG = _load_config("mysql.json")
-REDIS_CONFIG = _load_config("redis.json")
-WXBOT_CONFIG = _load_config("wxbot.json")
+MYSQL_CONFIG   = _load_config("mysql.json")
+REDIS_CONFIG   = _load_config("redis.json")
+WXBOT_CONFIG   = _load_config("wxbot.json")
+MINIAPP_CONFIG = _load_config("miniapp.json")

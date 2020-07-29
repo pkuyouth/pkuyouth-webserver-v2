@@ -89,8 +89,8 @@ def get_float_field(key, limited=None, data=None):
 def get_optional_float_field(key, limited=None, data=None, default=None):
     return get_field(float, key, limited=limited, data=data, nullable=True, default=default)
 
-def get_boolean_field(key, data=None):
+def get_bool_field(key, data=None):
     return get_field(bool_, key, data=data, nullable=False)
 
-def get_optional_boolean_field(key, data=None, default=None):
+def get_optional_bool_field(key, data=None, default=None):
     return get_field(bool_, key, data=data, nullable=True, default=default)
