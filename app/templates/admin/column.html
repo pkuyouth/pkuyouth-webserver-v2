@@ -1,0 +1,199 @@
+<!--
+ * ---------------------------------------
+ * Project: PKUYouth Webserver v2
+ * File: column.html
+ * Created Date: 2020-07-31
+ * Author: Xinghong Zhong
+ * ---------------------------------------
+ * Copyright (c) 2020 PKUYouth
+ -->
+
+{% extends "admin/base.html" %}
+{% block title %}Column{% endblock title %}
+
+{% block body %}
+<div class="row">
+  <div class="col-12">
+    <h2>栏目分类</h2>
+    <br>
+  </div>
+  <div class="col-12">
+    <nav class="pagination pagination-sm float-left">
+      {% for c in columns %}
+      <li class="page-item {% if c == column %}active{% endif %}">
+        <a class="page-link"
+          href="{{ url_for('admin.column_html', page=1, column=c) }}">{{ c }}</a>
+      </li>
+      {% endfor %}
+      </ul>
+    </nav>
+  </div>
+  <div class="col-12">
+    <nav class="pagination pagination-sm float-left">
+      <ul class="pagination">
+        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+          <a class="page-link"
+            href="{{ url_for('admin.column_html', page=page-1, column=column) }}">Previous</a>
+        </li>
+        <li class="page-item {% if page == max_page %}disabled{% endif %}">
+          <a class="page-link"
+            href="{{ url_for('admin.column_html', page=page+1, column=column) }}">Next</a>
+        </li>
+        {% for p in range(1, max_page + 1) %}
+        <li class="page-item {% if page == p %}active{% endif %}">
+          <a class="page-link"
+            href="{{ url_for('admin.column_html', page=p, column=column) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+  <div class="col-12">
+    <table class="table table-sm table-responsive-md table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>ID</th>
+          <th>Time</th>
+          <th>Column &nbsp;&nbsp;<button type="button" class="btn btn-sm btn-primary" locked="0"
+              onclick="tapLockColumnBtn(this);return false;">Lock</button></th>
+          <th class="w-50">Title</th>
+          <th>Read</th>
+          <th>Like</th>
+          <th>Hidden</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in articles %}
+        <tr class="text-{% if a.hidden %}muted{% else %}dark{% endif %}" a-aid="{{ a.aid }}">
+          <td class="font-weight-bold">{{ a.aid }}</td>
+          <td>{{ a.masssend_time | strftime("%Y-%m-%d") }}</td>
+          <td>
+            <form class="form-inline">
+              <div class="form-row mx-sm-2">
+                <input class="form-control form-control-sm" style="width: 72px;" type="text" name="column"
+                  value="{{ a.column[:8] }}" required="required">
+              </div>
+              <div class="form-row">
+                <button class="btn btn-sm btn-outline-primary"
+                  onclick="tapChangeColumnBtn(this);return false;">Change</button>
+              </div>
+            </form>
+          </td>
+          <td class="url"><a href="{{ a.content_url }}" target="_blank"
+              class="text-{% if a.hidden %}muted{% else %}primary{% endif %}">{{ a.title }}</a></td>
+          <td>{{ a.read_num }}</td>
+          <td>{{ a.like_num }}</td>
+          <td>
+            <button type="button" class="btn btn-outline-{% if a.hidden %}success{% else %}primary{% endif %}"
+              onclick="tapUseBtn(this);" a-hidden="{{ a.hidden }}">{% if a.hidden %}Display{% else %}Hide{% endif %}</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-12">
+    <nav class="pagination pagination-sm float-left">
+      {% for c in columns %}
+      <li class="page-item {% if c == column %}active{% endif %}">
+        <a class="page-link"
+          href="{{ url_for('admin.column_html', page=1, column=c) }}">{{ c }}</a>
+      </li>
+      {% endfor %}
+      </ul>
+    </nav>
+  </div>
+  <div class="col-12">
+    <nav class="pagination pagination-sm float-left">
+      <ul class="pagination">
+        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+          <a class="page-link"
+            href="{{ url_for('admin.column_html', page=page-1, column=column) }}">Previous</a>
+        </li>
+        <li class="page-item {% if page == max_page %}disabled{% endif %}">
+          <a class="page-link"
+            href="{{ url_for('admin.column_html', page=page+1, column=column) }}">Next</a>
+        </li>
+        {% for p in range(1, max_page + 1) %}
+        <li class="page-item {% if page == p %}active{% endif %}">
+          <a class="page-link"
+            href="{{ url_for('admin.column_html', page=p, column=column) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+
+<script type="text/javascript">
+  "use strict";
+
+  $('form input').blur(function () {
+    tapChangeColumnBtn(this);
+  });
+
+  function tapUseBtn(dom) {
+    let btn = $(dom);
+    let hidden = parseInt(btn.attr("a-hidden"));
+    axios.post("{{ url_for('admin.toggle_article_hidden') }}", {
+      aid: btn.parents("tr").attr("a-aid"),
+      hidden: !hidden,
+    }).then((resp) => {
+      if (resp.data.errcode === 0) {
+        btn.toggleClass("btn-outline-success btn-outline-primary");
+        btn.parents("tr").toggleClass("text-dark text-muted");
+        btn.parent().siblings(".url").find("a").toggleClass("text-primary text-muted");
+        btn.text(hidden ? 'Hide' : 'Display');
+        btn.attr("a-hidden", hidden ? 0 : 1);
+      } else {
+        throw new Error(resp.data);
+      };
+    }).catch((err) => {
+      throw new Error(err);
+      alert('XHR Error !')
+    });
+  };
+
+  function tapLockColumnBtn(dom) {
+    let btn = $(dom);
+    let locked = parseInt(btn.attr("locked"));
+    btn.toggleClass("btn-primary btn-success");
+    $("tbody .form-row > button").toggleClass("btn-outline-primary btn-outline-muted");
+    btn.text(!locked ? 'Unlock' : 'Lock');
+    if (!locked) {
+      $("tbody input[type=text]").attr("disabled", "disabled");
+      $("tbody .form-row > button").attr("disabled", "disabled");
+    } else {
+      $("tbody input[type=text]").removeAttr("disabled");
+      $("tbody .form-row > button").removeAttr("disabled");
+    };
+    btn.attr("locked", !locked ? 1 : 0);
+  };
+
+  function tapChangeColumnBtn(dom) {
+    let btn = $(dom);
+    let column = btn.parents("td").find("input").val();
+    if (column === '') return;
+    axios.post("{{ url_for('admin.modify_article_column') }}", {
+      aid: btn.parents("tr").attr("a-aid"),
+      column: column,
+    }).then((resp) => {
+      if (resp.data.errcode === 0) {
+        return;
+      } else {
+        throw new Error(resp.data);
+        alert('XHR Error !');
+      };
+    }).catch((err) => {
+      throw new Error(err);
+      alert('XHR Error !');
+    });
+  };
+
+</script>
+
+{% endblock script %}

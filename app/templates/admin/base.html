@@ -1,0 +1,79 @@
+<!--
+ * ---------------------------------------
+ * Project: PKUYouth Webserver v2
+ * File: base.html
+ * Created Date: 2020-07-31
+ * Author: Xinghong Zhong
+ * ---------------------------------------
+ * Copyright (c) 2020 PKUYouth
+ -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('root.favicon') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('root.favicon') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/vendor/bootstrap.min.css') }}">
+  <title>{% block title %}{% endblock title %}</title>
+  <style>
+    body {
+      font-family: -apple-system-font, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="jumbotron bg-light">
+          <div class="page-header">
+            <h1>PKUYouth Administration System</h1>
+          </div>
+          <br><br>
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" path="article" href="{{ url_for('admin.article_html') }}">Article</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" path="column" href="{{ url_for('admin.column_html') }}">Column</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" path="reporter" href="{{ url_for('admin.reporter_html') }}">Reporter</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% block body %}{% endblock body %}
+    <div class="row">
+      <div class="col-12">
+        <address>
+          <strong>@Rabbit, 2018-2020</strong><br>京ICP备 <a href="http://www.miibeian.gov.cn/" target="_blank"
+            class="text-dark">18018365</a><br>
+        </address>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/vendor/popper.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/vendor/jquery-3.3.1.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/vendor/bootstrap.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/vendor/axios.min.js') }}"></script>
+</body>
+
+</html>
+
+<script type="text/javascript">
+  "use strict";
+
+  let url = window.location.pathname;
+  let page = url.substring(url.lastIndexOf('/') + 1);
+  $("ul.nav a.nav-link[path=" + page + "]").addClass("active");
+</script>
+
+{% block script %}{% endblock script %}

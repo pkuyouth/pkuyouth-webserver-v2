@@ -23,3 +23,6 @@ class Reporter(db.Model):
     name = db.Column(db.MYSQL_VARCHAR(128), nullable=False)
 
     ix_name = db.Index('ix_name', name, unique=True)
+
+    def __init__(self, name):
+        self.name = name

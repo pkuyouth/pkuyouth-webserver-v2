@@ -162,10 +162,10 @@ def root():
                     sbq = db.session.\
                         query(
                             Article.aid,
-                            db.FulltextMatch(
+                            db.fts_match(
                                 Article.ix_text,
                                 keyword,
-                                db.FulltextMatch.BOOLEAN
+                                db.fts_match.BOOLEAN
                             ).label('score')
                         ).\
                         order_by(

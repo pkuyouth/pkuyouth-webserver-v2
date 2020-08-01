@@ -694,10 +694,10 @@ def search_articles_by_keyword():
     sbq1 = db.session.\
             query(
                 Article.aid,
-                db.FulltextMatch(
+                db.fts_match(
                     Article.ix_text,
                     keyword,
-                    db.FulltextMatch.BOOLEAN
+                    db.fts_match.BOOLEAN
                 ).label('score')
             )
 
@@ -783,10 +783,7 @@ def get_starred_articles():
         join(WxUserArticle).\
         filter(WxUserArticle.openid == openid).\
         filter(Article.hidden == 0).\
-        order_by(
-            Article.masssend_time.desc(),
-            Article.idx.asc(),
-        )
+        order_by(WxUserArticle.ctime.desc())
 
     if page != 0:
         st, ed = get_range(page, PAGE_SIZE)
@@ -809,10 +806,7 @@ def get_starred_articles():
                 sbq.c.ctime.label('star_time'),
             ).\
             join(sbq, sbq.c.aid == Article.aid).\
-            order_by(
-                Article.masssend_time.desc(),
-                Article.idx.asc(),
-            ).\
+            order_by(db.desc('star_time')).\
             all()
 
     return {

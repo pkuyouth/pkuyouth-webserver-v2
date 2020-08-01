@@ -1,0 +1,160 @@
+<!--
+ * ---------------------------------------
+ * Project: PKUYouth Webserver v2
+ * File: reporter.html
+ * Created Date: 2020-07-31
+ * Author: Xinghong Zhong
+ * ---------------------------------------
+ * Copyright (c) 2020 PKUYouth
+ -->
+
+{% extends "admin/base.html" %}
+{% block title %}Reporter{% endblock title %}
+
+{% block body %}
+<div class="row">
+  <div class="col-12">
+    <h2>记者信息</h2>
+    <br>
+  </div>
+  <div class="col-12">
+    <nav class="pagination pagination-sm">
+      <ul class="pagination">
+        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+          <a class="page-link" href="{{ url_for('admin.reporter_html', page=page-1) }}">Previous</a>
+        </li>
+        <li class="page-item {% if page == max_page %}disabled{% endif %}">
+          <a class="page-link" href="{{ url_for('admin.reporter_html', page=page+1) }}">Next</a>
+        </li>
+        {% for p in range(1, max_page + 1) %}
+        <li class="page-item {% if page == p %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('admin.reporter_html', page=p) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+  <div class="col-12">
+    <table class="table table-sm table-responsive-md table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>ID</th>
+          <th>Time</th>
+          <th>Column</th>
+          <th>Reporter</th>
+          <th>Title</th>
+          <th>Read</th>
+          <th>Like</th>
+          <th>Hidden</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in articles %}
+        <tr class="text-{% if a.hidden %}muted{% else %}dark{% endif %}" a-aid="{{ a.aid }}">
+          <td class="font-weight-bold">{{ a.aid }}</td>
+          <td>{{ a.masssend_time | strftime("%Y-%m-%d") }}</td>
+          <td>{{ a.column[:4] }}</td>
+          <td>
+            <form class="form-inline">
+              <div class="form-row mx-md-3">
+                <input class="form-control form-control-sm" type="text" style="width: 240px" name="column"
+                  value="{{ a.reporters }}" required="required" {% if a.hidden %} disabled="disabled" {% endif %}>
+              </div>
+            </form>
+          </td>
+          <td class="url"><a href="{{ a.content_url }}" target="_blank"
+              class="text-{% if a.hidden %}muted{% else %}primary{% endif %}">{{ a.title }}</a></td>
+          <td>{{ a.read_num }}</td>
+          <td>{{ a.like_num }}</td>
+          <td>
+            <button type="button" class="btn btn-outline-{% if a.hidden %}success{% else %}primary{% endif %}"
+              onclick="tapUseBtn(this);" a-hidden="{{ a.hidden }}">{% if a.hidden %}Display{% else %}Hide{% endif %}</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-12">
+    <nav class="pagination pagination-sm">
+      <ul class="pagination">
+        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+          <a class="page-link" href="{{ url_for('admin.reporter_html', page=page-1) }}">Previous</a>
+        </li>
+        <li class="page-item {% if page == max_page %}disabled{% endif %}">
+          <a class="page-link" href="{{ url_for('admin.reporter_html', page=page+1) }}">Next</a>
+        </li>
+        {% for p in range(1, max_page + 1) %}
+        <li class="page-item {% if page == p %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('admin.reporter_html', page=p) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+{% endblock body %}
+
+
+{% block script %}
+
+<script type="text/javascript">
+  "use strict";
+
+  $('form input').blur(function () {
+    tapChangeRptBtn(this);
+  });
+
+  function tapChangeRptBtn(dom) {
+    let btn = $(dom);
+    let reporters = btn.parents("td").find("input").val();
+    axios.post("{{ url_for('admin.modify_article_reporters') }}", {
+      aid: btn.parents("tr").attr("a-aid"),
+      reporters: reporters,
+    }).then((resp) => {
+      if (resp.data.errcode === 0) {
+        return;
+      } else {
+        throw new Error(resp.data);
+        alert('XHR Error !');
+      };
+    }).catch((err) => {
+      throw new Error(err);
+      alert('XHR Error !');
+    });
+  };
+
+  function tapUseBtn(dom) {
+    let btn = $(dom);
+    let hidden = parseInt(btn.attr("in-use"));
+    axios.post("{{ url_for('admin.toggle_article_hidden') }}", {
+      aid: btn.parents("tr").attr("a-aid"),
+      hidden: !hidden,
+    }).then((resp) => {
+      if (resp.data.errcode === 0) {
+        btn.toggleClass("btn-outline-success btn-outline-primary");
+        btn.parents("tr").toggleClass("text-dark text-muted");
+        btn.parents("tr").find("form button").toggleClass("btn-outline-primary btn-outline-muted");
+        btn.parent().siblings(".url").find("a").toggleClass("text-primary text-muted");
+        btn.text(hidden ? 'Hide' : 'Display');
+        if (hidden) {
+          btn.parents("tr").find(".form-row > input[type=text]").removeAttr("disabled");
+          btn.parents("tr").find(".form-row > button").removeAttr("disabled");
+        } else {
+          btn.parents("tr").find(".form-row > input[type=text]").attr("disabled", "disabled");
+          btn.parents("tr").find(".form-row > button").attr("disabled", "disabled");
+        };
+        btn.attr("a-hidden", hidden ? 0 : 1);
+      } else {
+        throw new Error(resp.data);
+      };
+    }).catch((err) => {
+      throw new Error(err);
+      alert('XHR Error !');
+    });
+  };
+
+</script>
+
+{% endblock script %}

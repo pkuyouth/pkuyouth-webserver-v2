@@ -12,7 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.mysql.types import CHAR, VARCHAR, TEXT, INTEGER,\
     TINYINT, BIGINT, DATETIME
 from .model import Model
-from .expression import FulltextMatch
+from .expression import fts_match, group_concat
 
 db = SQLAlchemy(model_class=Model)
 
@@ -24,4 +24,5 @@ db.MYSQL_TINYINT = TINYINT
 db.MYSQL_BIGINT = BIGINT
 db.MYSQL_DATETIME = DATETIME
 
-db.FulltextMatch = FulltextMatch
+db.fts_match = fts_match
+db.group_concat = group_concat

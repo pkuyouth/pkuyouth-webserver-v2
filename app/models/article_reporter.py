@@ -19,5 +19,11 @@ class ArticleReporter(db.Model):
         "mysql_charset": "utf8",
     }
 
-    aid   = db.Column(db.MYSQL_INTEGER, db.ForeignKey('article.aid'), primary_key=True)
-    rid   = db.Column(db.MYSQL_INTEGER, db.ForeignKey('reporter.rid'), primary_key=True)
+    aid       = db.Column(db.MYSQL_INTEGER, db.ForeignKey('article.aid'), primary_key=True)
+    rid       = db.Column(db.MYSQL_INTEGER, db.ForeignKey('reporter.rid'), primary_key=True)
+    is_leader = db.Column(db.MYSQL_TINYINT(1), nullable=False, server_default='0')
+
+    def __init__(self, aid, rid, is_leader=False):
+        self.aid = aid
+        self.rid = rid
+        self.is_leader = is_leader

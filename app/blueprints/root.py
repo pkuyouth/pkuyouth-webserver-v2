@@ -9,7 +9,7 @@
 # Copyright (c) 2020 PKUYouth
 
 import time
-from flask import Blueprint
+from flask import Blueprint, redirect, url_for
 
 bpRoot = Blueprint('root', __name__)
 
@@ -17,3 +17,11 @@ bpRoot = Blueprint('root', __name__)
 @bpRoot.route('/', methods=["GET"])
 def root():
     return "Hello World !"
+
+@bpRoot.route('/favicon.ico', methods=["GET"])
+def favicon():
+    return redirect(url_for('static', filename='favicon.ico'))
+
+@bpRoot.route('/robots.txt', methods=["GET"])
+def robots():
+    return redirect(url_for('static', filename='robots.txt'))
