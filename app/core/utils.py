@@ -8,6 +8,7 @@
 # ---------------------------------------
 # Copyright (c) 2020 PKUYouth
 
+import hashlib
 from ._internal import _bool
 
 def b(s, encoding="utf-8"):
@@ -35,3 +36,9 @@ def bool_(s):
     if isinstance(s, (int, float)):
         return bool(s)
     raise TypeError("unsupported type %s of %r" % (s.__class__.__name__, s))
+
+def xMD5(s):
+    return hashlib.md5(b(s)).hexdigest()
+
+def xSHA1(s):
+    return hashlib.sha1(b(s)).hexdigest()

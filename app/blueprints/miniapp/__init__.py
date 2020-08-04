@@ -18,8 +18,7 @@ from flask import Blueprint, current_app, g, abort
 from ...models import db, WxUser, Article, WxUserArticle, Reporter, ArticleReporter
 from ...core.flask.parser import get_str_field, get_int_field, get_bool_field
 from ...core.redis.types import RedisAutoExpiredMap
-from ...core.safety.digest import xMD5
-from ...core.utils import u
+from ...core.utils import u, xMD5
 from ...core.exceptions import MiniappUnauthorized, RequestArgumentError
 from .api import jscode2session
 
@@ -379,6 +378,7 @@ def get_column_list():
                 Article.column,
                 db.func.count(Article.aid).label('count'),
             ).\
+            filter(Article.hidden == 0).\
             filter(Article.column.in_(columns)).\
             group_by(Article.column).\
             all()
@@ -511,12 +511,18 @@ def search_reporters():
 
     names = [ name.strip() for name in keyword.split() if len(name.strip()) > 0 ]
 
+    sbq = db.session.\
+            query(Article.aid).\
+            filter(Article.hidden == 0).\
+            subquery()
+
     reporters = db.session.\
             query(
                 Reporter.name,
-                db.func.count(ArticleReporter.aid).label('article_count'),
+                db.func.count(sbq.c.aid).label('article_count'),
             ).\
-            join(ArticleReporter).\
+            join(ArticleReporter, ArticleReporter.rid == Reporter.rid).\
+            join(sbq, sbq.c.aid == ArticleReporter.aid).\
             filter(Reporter.name.in_(names)).\
             group_by(Reporter.rid).\
             order_by(db.desc('article_count')).\
@@ -834,6 +840,7 @@ def star_article():
 
     ret = db.session.\
             query(Article.aid).\
+            filter(Article.hidden == 0).\
             filter(Article.aid == aid).\
             first()
 

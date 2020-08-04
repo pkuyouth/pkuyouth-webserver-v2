@@ -68,7 +68,8 @@
           <td>{{ a.like_num }}</td>
           <td>
             <button type="button" class="btn btn-outline-{% if a.hidden %}success{% else %}primary{% endif %}"
-              onclick="tapUseBtn(this);" a-hidden="{{ a.hidden }}">{% if a.hidden %}Display{% else %}Hide{% endif %}</button>
+              onclick="tapHideBtn(this);"
+              a-hidden="{{ a.hidden }}">{% if a.hidden %}Display{% else %}Hide{% endif %}</button>
           </td>
         </tr>
         {% endfor %}
@@ -125,9 +126,9 @@
     });
   };
 
-  function tapUseBtn(dom) {
+  function tapHideBtn(dom) {
     let btn = $(dom);
-    let hidden = parseInt(btn.attr("in-use"));
+    let hidden = parseInt(btn.attr("a-hidden"));
     axios.post("{{ url_for('admin.toggle_article_hidden') }}", {
       aid: btn.parents("tr").attr("a-aid"),
       hidden: !hidden,

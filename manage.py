@@ -19,11 +19,9 @@ from flask_script.commands import ShowUrls
 from flask_sqlalchemy.model import DefaultMeta
 from app import create_app, db
 from app import models
+from app.core.config import CONFIGS
 
-
-app = create_app("development")
-manager = Manager(app=app)
-
+manager = Manager()
 manager.add_command('urls', ShowUrls())
 
 
@@ -37,7 +35,7 @@ def shell():
     from app.blueprints.miniapp import utoken_map
 
     ctx = {
-        "app": app,
+        "app": manager.app,
         "request": request,
         "g": g,
         "db": db,
@@ -58,6 +56,7 @@ def shell():
 @manager.option("--no-proxy-fix", dest="no_proxy_fix", action="store_true", default=False)
 def runserver(host, port, no_proxy_fix):
     """ run development server """
+    app = manager.app
     if not no_proxy_fix:
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
     run_simple(host, port, app, use_reloader=True, use_debugger=True)
@@ -71,4 +70,11 @@ def test():
 
 
 if __name__ == '__main__':
+
+    if len(sys.argv) >= 2 and sys.argv[1] in CONFIGS:
+        env = sys.argv.pop(1)
+    else:
+        env = "development"
+
+    manager.app = create_app(env)
     manager.run()

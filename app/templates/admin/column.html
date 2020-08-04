@@ -21,8 +21,7 @@
     <nav class="pagination pagination-sm float-left">
       {% for c in columns %}
       <li class="page-item {% if c == column %}active{% endif %}">
-        <a class="page-link"
-          href="{{ url_for('admin.column_html', page=1, column=c) }}">{{ c }}</a>
+        <a class="page-link" href="{{ url_for('admin.column_html', page=1, column=c) }}">{{ c }}</a>
       </li>
       {% endfor %}
       </ul>
@@ -32,17 +31,14 @@
     <nav class="pagination pagination-sm float-left">
       <ul class="pagination">
         <li class="page-item {% if page == 1 %}disabled{% endif %}">
-          <a class="page-link"
-            href="{{ url_for('admin.column_html', page=page-1, column=column) }}">Previous</a>
+          <a class="page-link" href="{{ url_for('admin.column_html', page=page-1, column=column) }}">Previous</a>
         </li>
         <li class="page-item {% if page == max_page %}disabled{% endif %}">
-          <a class="page-link"
-            href="{{ url_for('admin.column_html', page=page+1, column=column) }}">Next</a>
+          <a class="page-link" href="{{ url_for('admin.column_html', page=page+1, column=column) }}">Next</a>
         </li>
         {% for p in range(1, max_page + 1) %}
         <li class="page-item {% if page == p %}active{% endif %}">
-          <a class="page-link"
-            href="{{ url_for('admin.column_html', page=p, column=column) }}">{{ p }}</a>
+          <a class="page-link" href="{{ url_for('admin.column_html', page=p, column=column) }}">{{ p }}</a>
         </li>
         {% endfor %}
       </ul>
@@ -85,7 +81,8 @@
           <td>{{ a.like_num }}</td>
           <td>
             <button type="button" class="btn btn-outline-{% if a.hidden %}success{% else %}primary{% endif %}"
-              onclick="tapUseBtn(this);" a-hidden="{{ a.hidden }}">{% if a.hidden %}Display{% else %}Hide{% endif %}</button>
+              onclick="tapHideBtn(this);"
+              a-hidden="{{ a.hidden }}">{% if a.hidden %}Display{% else %}Hide{% endif %}</button>
           </td>
         </tr>
         {% endfor %}
@@ -96,8 +93,7 @@
     <nav class="pagination pagination-sm float-left">
       {% for c in columns %}
       <li class="page-item {% if c == column %}active{% endif %}">
-        <a class="page-link"
-          href="{{ url_for('admin.column_html', page=1, column=c) }}">{{ c }}</a>
+        <a class="page-link" href="{{ url_for('admin.column_html', page=1, column=c) }}">{{ c }}</a>
       </li>
       {% endfor %}
       </ul>
@@ -107,17 +103,14 @@
     <nav class="pagination pagination-sm float-left">
       <ul class="pagination">
         <li class="page-item {% if page == 1 %}disabled{% endif %}">
-          <a class="page-link"
-            href="{{ url_for('admin.column_html', page=page-1, column=column) }}">Previous</a>
+          <a class="page-link" href="{{ url_for('admin.column_html', page=page-1, column=column) }}">Previous</a>
         </li>
         <li class="page-item {% if page == max_page %}disabled{% endif %}">
-          <a class="page-link"
-            href="{{ url_for('admin.column_html', page=page+1, column=column) }}">Next</a>
+          <a class="page-link" href="{{ url_for('admin.column_html', page=page+1, column=column) }}">Next</a>
         </li>
         {% for p in range(1, max_page + 1) %}
         <li class="page-item {% if page == p %}active{% endif %}">
-          <a class="page-link"
-            href="{{ url_for('admin.column_html', page=p, column=column) }}">{{ p }}</a>
+          <a class="page-link" href="{{ url_for('admin.column_html', page=p, column=column) }}">{{ p }}</a>
         </li>
         {% endfor %}
       </ul>
@@ -136,7 +129,7 @@
     tapChangeColumnBtn(this);
   });
 
-  function tapUseBtn(dom) {
+  function tapHideBtn(dom) {
     let btn = $(dom);
     let hidden = parseInt(btn.attr("a-hidden"));
     axios.post("{{ url_for('admin.toggle_article_hidden') }}", {

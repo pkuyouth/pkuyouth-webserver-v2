@@ -17,7 +17,7 @@ from flask import Blueprint, request, abort, current_app
 from itsdangerous import json
 from ...models import db, Article
 from ...core.redis.types import RedisList
-from ...core.safety.digest import xSHA1
+from ...core.utils import xSHA1
 from ...core.const import WXBOT_CONFIG
 from ...core.exceptions import WxbotAuthFailed
 from .message import receive, reply, text
